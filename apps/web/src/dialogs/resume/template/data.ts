@@ -121,4 +121,10 @@ export const templates = {
 		imageUrl: "/templates/jpg/smeargle.jpg",
 		tags: ["Single-column", "ATS friendly", "Editorial", "Magazine", "Serif", "Writer", "Designer", "Communications"],
 	},
+	xatu: {
+		name: "Xatu",
+		description: msg`Single-column with a sidebar and clean grid layout; versatile for any professional or technical role.`,
+		imageUrl: "/templates/jpg/xatu.jpg",
+		tags: ["Single-column", "ATS friendly", "Sidebar", "Grid layout", "Versatile", "Professional", "Technical"],
+	},
 } as const satisfies Record<Template, TemplateMetadata>;

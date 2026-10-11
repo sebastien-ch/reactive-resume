@@ -18,6 +18,7 @@ export const templateSchema = z.enum([
 	"rhyhorn",
 	"scizor",
 	"smeargle",
+	"xatu",
 ]);
 
 export type Template = z.infer<typeof templateSchema>;
@@ -55,4 +56,5 @@ export const templateLayouts = {
 	rhyhorn: oneColumn,
 	scizor: oneColumn,
 	smeargle: oneColumn,
+	xatu: oneColumn,
 } as const satisfies Record<Template, TemplateLayout>;

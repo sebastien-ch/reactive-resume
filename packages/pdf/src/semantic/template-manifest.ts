@@ -19,6 +19,7 @@ import { porygonSemanticManifest } from "../templates/porygon/semantic";
 import { rhyhornSemanticManifest } from "../templates/rhyhorn/semantic";
 import { scizorSemanticManifest } from "../templates/scizor/semantic";
 import { smeargleSemanticManifest } from "../templates/smeargle/semantic";
+import { xatuSemanticManifest } from "../templates/xatu/semantic";
 import { SHARED_BINDING_REGISTRY } from "./binding-inventory";
 
 export type TemplateSemanticPlacement = "main" | "sidebar";
@@ -151,6 +152,7 @@ const TEMPLATE_SEMANTIC_MANIFESTS = {
 	rhyhorn: rhyhornSemanticManifest,
 	scizor: scizorSemanticManifest,
 	smeargle: smeargleSemanticManifest,
+	xatu: xatuSemanticManifest,
 } as const satisfies Readonly<Record<Template, TemplateSemanticManifest>>;
 
 export function getTemplateSemanticManifest(template: Template): TemplateSemanticManifest {

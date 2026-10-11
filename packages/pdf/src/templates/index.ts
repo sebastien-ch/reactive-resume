@@ -17,6 +17,7 @@ import { PorygonPage } from "./porygon/PorygonPage";
 import { RhyhornPage } from "./rhyhorn/RhyhornPage";
 import { ScizorPage } from "./scizor/ScizorPage";
 import { SmearglePage } from "./smeargle/SmearglePage";
+import { XatuPage } from "./xatu/XatuPage";
 
 const templatePages: Partial<Record<Template, TemplatePage>> = {
 	azurill: AzurillPage,
@@ -36,6 +37,7 @@ const templatePages: Partial<Record<Template, TemplatePage>> = {
 	rhyhorn: RhyhornPage,
 	scizor: ScizorPage,
 	smeargle: SmearglePage,
+	xatu: XatuPage,
 };
 
 const defaultTemplatePage = AzurillPage;
