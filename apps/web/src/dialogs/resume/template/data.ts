@@ -127,4 +127,10 @@ export const templates = {
 		imageUrl: "/templates/jpg/xatu.jpg",
 		tags: ["Single-column", "ATS friendly", "Sidebar", "Grid layout", "Versatile", "Professional", "Technical"],
 	},
+	xatuduo: {
+		name: "Xatuduo",
+		description: msg`Two-column test variant of Xatu: a wide main column with a narrow sidebar on the right, sans-serif text and a single accent color.`,
+		imageUrl: "/templates/jpg/xatuduo.jpg",
+		tags: ["Two-column", "Sidebar", "Test"],
+	},
 } as const satisfies Record<Template, TemplateMetadata>;
