@@ -2,6 +2,7 @@ import type { TemplatePageProps } from "../../document";
 import type { Style } from "../../forme/style-types";
 import type { TemplateColorRoles, TemplateStyleSlots } from "../shared/types";
 import type {
+	CustomSection,
 	EducationItem,
 	ExperienceItem,
 	InterestItem,
@@ -43,12 +44,13 @@ const BULLET_INDENT = 10;
 
 const TEXT_COLOR = "#1B1B1B";
 const MUTED_COLOR = "#3A3A3A";
+const DATE_COLOR = "#333333";
 const ACCENT_COLOR = "#1F4E79";
 const RULE_COLOR = "#8C8C8C";
 
-const BODY_SIZE = 9.5;
+const BODY_SIZE = 10;
 const BODY_LINE_HEIGHT = 1.4;
-const SMALL_SIZE = 8.5;
+const SMALL_SIZE = 9;
 
 /** Sections this template draws itself; any other section falls back to the shared renderer. */
 const OWN_SECTIONS = new Set(["experience", "education", "skills", "languages", "interests"]);
@@ -67,6 +69,7 @@ type XatuduoStyles = Omit<TemplateStyleSlots, "page"> & {
 	ownItems: Style;
 	ownItem: Style;
 	picture: Style;
+	headerPictureSlot: Style;
 	headerTitle: Style;
 	itemHeader: Style;
 	splitRow: Style;
@@ -101,6 +104,12 @@ type SectionRendererProps = XatuduoStylesProps & {
 	section: string;
 	placement: "main" | "sidebar";
 	pageNodeKey: string;
+};
+
+type SkillsSectionProps = XatuduoStylesProps & {
+	pageNodeKey: string;
+	sectionId: string;
+	section: { title: string; hidden: boolean; items: SkillItem[] };
 };
 
 type ExperienceItemViewProps = XatuduoStylesProps & {
@@ -188,24 +197,42 @@ const Header = ({ styles }: XatuduoStylesProps) => {
 
 	return (
 		<SemanticHeaderView style={styles.header}>
-			{hasTemplatePicture(picture) && <SemanticHeaderPicture src={picture.url} style={styles.picture} />}
 			<View style={styles.headerTitle}>
 				<Text style={styles.headerName}>{basics.name}</Text>
 				{hasText(basics.headline) && <Text style={styles.headerHeadline}>{basics.headline}</Text>}
 				{hasText(contact) && <Text style={styles.headerContact}>{contact}</Text>}
 			</View>
+			{/* Same flex split as the body, so the picture's left edge lines up with the sidebar column. */}
+			{hasTemplatePicture(picture) && (
+				<View style={styles.headerPictureSlot}>
+					<SemanticHeaderPicture src={picture.url} style={styles.picture} />
+				</View>
+			)}
 		</SemanticHeaderView>
 	);
 };
 
 const SectionRenderer = ({ section, placement, pageNodeKey, styles }: SectionRendererProps) => {
+	const { sections, customSections } = useRender();
+	const customSection = customSections.find((custom) => custom.id === section);
+	if (customSection?.type === "skills") {
+		return (
+			<SkillsSection
+				pageNodeKey={pageNodeKey}
+				sectionId={section}
+				section={customSection as Extract<CustomSection, { type: "skills" }>}
+				styles={styles}
+			/>
+		);
+	}
+
 	switch (section) {
 		case "experience":
 			return <ExperienceSection pageNodeKey={pageNodeKey} styles={styles} />;
 		case "education":
 			return <EducationSection pageNodeKey={pageNodeKey} styles={styles} />;
 		case "skills":
-			return <SkillsSection pageNodeKey={pageNodeKey} styles={styles} />;
+			return <SkillsSection pageNodeKey={pageNodeKey} sectionId="skills" section={sections.skills} styles={styles} />;
 		case "languages":
 			return <LanguagesSection pageNodeKey={pageNodeKey} styles={styles} />;
 		case "interests":
@@ -321,14 +348,13 @@ const EducationSection = ({ pageNodeKey, styles }: Omit<SectionRendererProps, "s
 	);
 };
 
-const SkillsSection = ({ pageNodeKey, styles }: Omit<SectionRendererProps, "section" | "placement">) => {
-	const { sections } = useRender();
-	const section = sections.skills;
+/** Skills, and custom sections of skill items: the name in bold on its own line, then keywords or proficiency. */
+const SkillsSection = ({ pageNodeKey, sectionId, section, styles }: SkillsSectionProps) => {
 	const items = section.items.filter((item: SkillItem) => !item.hidden && hasText(item.name));
 	if (section.hidden || items.length === 0) return null;
 
 	return (
-		<OwnSection sectionId="skills" pageNodeKey={pageNodeKey} title={section.title} styles={styles}>
+		<OwnSection sectionId={sectionId} pageNodeKey={pageNodeKey} title={section.title} styles={styles}>
 			{items.map((item) => (
 				<View key={item.id} wrap={false}>
 					<Text style={styles.sidebarTitle}>{item.name}</Text>
@@ -415,13 +441,21 @@ const useXatuduoTemplate = (): XatuduoTemplate => {
 				borderBottomColor: TEXT_COLOR,
 				paddingBottom: 8,
 				marginBottom: 14,
-				flexDirection: r.row,
+				flexDirection: r.columns,
 				alignItems: "center",
-				columnGap: 12,
+				columnGap: COLUMN_GAP,
 			},
 			headerTitle: {
-				flex: 1,
+				flexGrow: 2,
+				flexShrink: 1,
+				flexBasis: 0,
 				rowGap: 3,
+			},
+			headerPictureSlot: {
+				flexGrow: 1,
+				flexShrink: 1,
+				flexBasis: 0,
+				alignItems: "flex-start",
 			},
 			headerName: {
 				fontSize: 21,
@@ -479,7 +513,7 @@ const useXatuduoTemplate = (): XatuduoTemplate => {
 			itemDate: {
 				flexShrink: 0,
 				fontSize: SMALL_SIZE,
-				color: MUTED_COLOR,
+				color: DATE_COLOR,
 			},
 			itemEmployer: {
 				fontWeight: "600",
