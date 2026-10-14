@@ -38,7 +38,6 @@ import { useTemplateBase } from "../shared/template-base";
 
 // One column: every section, main then sidebar, is stacked in one reading order. Rows only in the header (name and
 // squares beside headline and contact lines, icon beside text) and for bullets. Type scale in PDF points (the source mockup's 12 px is 9 pt).
-const MIN_SIZE = 9;
 const BODY_SIZE = 10;
 const BODY_LINE_HEIGHT = 1.3;
 const TITLE_LINE_SIZE = 10.5;
@@ -132,6 +131,7 @@ type XatuStyles = Omit<TemplateStyleSlots, "page"> & {
 	interestsLine: Style;
 	lineLabel: Style;
 	descriptionBold: Style;
+	descriptionParagraph: Style;
 	bulletRow: Style;
 	bulletMarker: Style;
 	bulletColors: string[];
@@ -548,7 +548,11 @@ const Description = ({ html, bulletKey, styles }: DescriptionProps) => {
 		<View>
 			{blocks.map((block, index) => {
 				if (block.kind !== "bullet")
-					return <Text key={`${index}-${block.text}`}>{renderRuns(block.runs, styles)}</Text>;
+					return (
+						<Text key={`${index}-${block.text}`} style={styles.descriptionParagraph}>
+							{renderRuns(block.runs, styles)}
+						</Text>
+					);
 				const bulletIndex = start + blocks.slice(0, index).filter((previous) => previous.kind === "bullet").length;
 				const backgroundColor = styles.bulletColors[bulletIndex % styles.bulletColors.length];
 				return (
@@ -948,9 +952,11 @@ const useXatuTemplate = (): XatuTemplate => {
 			itemPosition: base.bold,
 			itemExtra: { fontSize: BODY_SIZE },
 			labelledLine: { fontSize: BODY_SIZE },
-			interestsLine: { fontSize: MIN_SIZE },
+			interestsLine: { fontSize: BODY_SIZE },
 			lineLabel: base.bold,
 			descriptionBold: base.bold,
+			// Paragraphs start where bullet text does, so only an item's title line touches the margin.
+			descriptionParagraph: r.rtl ? { paddingRight: BULLET_INDENT } : { paddingLeft: BULLET_INDENT },
 			bulletRow: { flexDirection: r.row, alignItems: "flex-start" },
 			bulletMarker: {
 				width: BULLET_SIZE,
